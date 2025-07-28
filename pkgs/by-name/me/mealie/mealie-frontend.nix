@@ -1,11 +1,11 @@
-src: version:
-{
+src: version: {
   lib,
   fetchYarnDeps,
   nodejs_20,
   fixup-yarn-lock,
   stdenv,
   yarn,
+  writableTmpDirAsHomeHook,
 }:
 stdenv.mkDerivation {
   name = "mealie-frontend";
@@ -20,13 +20,13 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     fixup-yarn-lock
     nodejs_20
-    (yarn.override { nodejs = nodejs_20; })
+    (yarn.override {nodejs = nodejs_20;})
+    writableTmpDirAsHomeHook
   ];
 
   configurePhase = ''
     runHook preConfigure
 
-    export HOME=$(mktemp -d)
     yarn config --offline set yarn-offline-mirror "$yarnOfflineCache"
     fixup-yarn-lock yarn.lock
     # TODO: Remove --ignore-engines once upstream supports nodejs_20+
@@ -57,6 +57,6 @@ stdenv.mkDerivation {
   meta = with lib; {
     description = "Frontend for Mealie";
     license = licenses.agpl3Only;
-    maintainers = with maintainers; [ litchipi ];
+    maintainers = with maintainers; [litchipi];
   };
 }
